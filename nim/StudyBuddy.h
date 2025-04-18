@@ -1,4 +1,5 @@
 #pragma once
+#include <WinSock2.h>	//Added this to make this file work
 #define MAX_NAME 50
 #define MAX_COURSENAME 10
 #define MAX_SERVERS 100
