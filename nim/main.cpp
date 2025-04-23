@@ -142,7 +142,7 @@ int server_main() {
 				return 1;
 			}
 		}
-		if else(strncmp(recvBuf, Player_CONFIRM, 7) == 0)
+		else if(strncmp(recvBuf, Player_CONFIRM, 7) == 0)
 		{
 			cout << recvBuf << " would like to play. Accept? YES or NO:" << endl;
 			cin.getline(sendbuf, DEFAULT_BUFLEN);
@@ -174,6 +174,10 @@ int server_main() {
 
 int client_main() {
 	//code that we used in previous project
+	char recvBuf[DEFAULT_BUFLEN] = {};
+	int len = 0;
+	struct sockaddr_in addr;
+	int addrSize = sizeof(addr);
 
 	// 1. initialize winstock
 	WSADATA wsaData;
@@ -247,7 +251,7 @@ int client_main() {
 
 			}
 
-			char great[6] = "GREAT!";
+			char great[7] = "GREAT!";
 
 			while (recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize)) {
 				if (_stricmp(recvBuf, "YES") == 0) {//if server said yes
@@ -327,11 +331,10 @@ int client_main() {
 		//		cout << "recv failed: " << WSAGetLastError() << endl;
 		//	}
 		//}
-	}
+	
 	//close socket
 	closesocket(ConnectionlessSocket);
 	WSACleanup();
-
 }
 
 
