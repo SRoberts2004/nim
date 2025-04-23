@@ -15,6 +15,8 @@
 #define Study_MEMLIST "Members="
 #define Study_JOIN "Join="
 #define Study_CONFIRM "Join!"
+//Added by us
+#define Player_CONFIRM "Player="
 struct ServerStruct {
 	char name[MAX_NAME];
 	sockaddr_in addr;
