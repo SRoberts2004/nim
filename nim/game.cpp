@@ -12,7 +12,7 @@ void displayBoard(vector<int> board) {
 		cout << "Pile #" << i + 1 << " contains " << board.at(i) << " stones." << endl;
 	}
 
-}
+};
 
 vector<int> generateBoard() {
 	int numOfPiles;
@@ -58,19 +58,38 @@ vector<int> generateBoard() {
 
 	displayBoard(board);
 	return  board;
-}
-string buildDatagram(vector<int> board) {
-	char cstring[] = "";
-	cstring[0] = board.size();
+};
 
+char* buildDatagram(const vector<int>& board) { //NOT FINISHED Need to make sure this is able to be passed to sendTo(). 
+	int m = board.size();						//	Also need to proabably make a generateBoard function that takes a datagram since that's
+	int len = 1 + 2 * m;						//	what we will be recciving.
+	char* datagram = new char[len + 1];
 
-	return cstring;
-}
+	datagram[0] = '0' + m;
+
+	int index = 1;
+	for (int i = 0; i < m; ++i) {
+		int rocks = board[i];
+
+		if (rocks < 10) {
+			datagram[index++] = '0';
+			datagram[index++] = '0' + rocks;
+		}
+		else {
+			datagram[index++] = '0' + (rocks / 10);
+			datagram[index++] = '0' + (rocks % 10);
+		}
+	}
+
+	datagram[len] = '\0';
+	return datagram;
+};
+
 //int main() {
 //
-//	generateBoard();
+//	vector<int> board = generateBoard();
 //
-//
+//	buildDatagram(board);
 //
 //	return 0;
 //}
