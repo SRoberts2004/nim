@@ -115,6 +115,7 @@ int server_main() {
 	//add string concat for name=
 	cout << "Type 'Name=(your name)': ";
 	cin.getline(server_name, DEFAULT_BUFLEN);
+	//strcat_s(memberList, newMemberName);
 
 	//4. Send and recieve data
 
@@ -267,6 +268,7 @@ int client_main() {
 				else if (_stricmp(recvBuf, "NO") == 0) {//if server said no
 					cout << "Game Denied" << endl;
 				}
+				break;
 			}
 		}
 	}
