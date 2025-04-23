@@ -209,47 +209,61 @@ int client_main() {
 	cout << "Please type 'Player=(your name)':";
 	char player_name[DEFAULT_BUFLEN] = {};
 	cin.getline(player_name, DEFAULT_BUFLEN);
-	//array of server struct need to go below with socket
-	ServerStruct serverInfo[MAX_SERVERS];
-	int numServer = getServers(ConnectionlessSocket, serverInfo);
 
-	//save number of servers
-	int i = 0;
-	for (i = 0; i < numServer; i++) {
-		cout << i << ". ";
-		cout << serverInfo[i].name << endl;
-		//serverinfo at i has address
-	}
+	bool boolChallenge = false;
+	while (boolChallenge == false) {
+		//array of server struct need to go below with socket
+		ServerStruct serverInfo[MAX_SERVERS];
+		int numServer = getServers(ConnectionlessSocket, serverInfo);
 
-	if (i == 0)
-	{
-		cout << "There are no servers to join" << endl;
-	}
-	else
-	{
-		cout << "Type the number of the server you would like to join:" << endl;
-		cin >> i;
-		cin.ignore(1);
-
-		int recvbuflen = DEFAULT_BUFLEN;
-		char recvbuf[DEFAULT_BUFLEN];
-		char sendbuf[DEFAULT_BUFLEN];
-
-	int iResult = sendto(ConnectionlessSocket, player_name, strlen(player_name) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
-	if (iResult == SOCKET_ERROR) {
-		cout << "send failed: " << WSAGetLastError() << endl;
-		closesocket(ConnectionlessSocket);
-		WSACleanup();
-		return 1;
-
-	}
-
-	while (recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize)) {
-		if () {//if server said yes
-
+		//save number of servers
+		int i = 0;
+		for (i = 0; i < numServer; i++) {
+			cout << i << ". ";
+			cout << serverInfo[i].name << endl;
+			//serverinfo at i has address
 		}
-		else if () {//if server said no
 
+		if (i == 0)
+		{
+			cout << "There are no servers to join" << endl;
+		}
+		else
+		{
+			cout << "Type the number of the server you would like to join:" << endl;
+			cin >> i;
+			cin.ignore(1);
+
+			int recvbuflen = DEFAULT_BUFLEN;
+			char recvbuf[DEFAULT_BUFLEN];
+			char sendbuf[DEFAULT_BUFLEN];
+
+			int iResult = sendto(ConnectionlessSocket, player_name, strlen(player_name) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
+			if (iResult == SOCKET_ERROR) {
+				cout << "send failed: " << WSAGetLastError() << endl;
+				closesocket(ConnectionlessSocket);
+				WSACleanup();
+				return 1;
+
+			}
+
+			char great[6] = "GREAT!";
+
+			while (recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize)) {
+				if (_stricmp(recvBuf, "YES") == 0) {//if server said yes
+					int iResult = sendto(ConnectionlessSocket, great, strlen(great) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
+					if (iResult == SOCKET_ERROR) {
+						cout << "send failed: " << WSAGetLastError() << endl;
+						closesocket(ConnectionlessSocket);
+						WSACleanup();
+						return 1;
+					}
+					boolChallenge = true;
+				}
+				else if (_stricmp(recvBuf, "NO") == 0) {//if server said no
+					cout << "Game Denied" << endl;
+				}
+			}
 		}
 	}
 
