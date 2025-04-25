@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include "StudyBuddy.h"
 #include <string>
 #include <vector>
 
@@ -89,8 +90,17 @@ char* buildDatagram(const vector<int>& board) { //NOT FINISHED Need to make sure
 char* buildMoveDatagram(int pile, int stones) {
 	int len = 4;
 	char* datagram = new char[len];
-	datagram[0] = '0' + pile;			//THIS FUNCTION IS INCOMPLETE
-	datagram[1] = '0' + stones;
+	datagram[0] = '0' + pile;
+	if (stones < 10) {
+		datagram[1] = '0' + stones;
+	}
+	else {
+		datagram[1] = '0' + (stones / 10);
+		datagram[1] = '0' + (stones % 10);
+	}
+				//THIS FUNCTION IS INCOMPLETE
+	
+	
 	datagram[len] = '\0';
 	return datagram;
 };
