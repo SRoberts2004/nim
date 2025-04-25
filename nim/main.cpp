@@ -61,7 +61,9 @@ Common variables and function names:
 #include <ws2tcpip.h>
 #include <string>
 #include <cstring>
+#include <vector>
 #include "StudyBuddy.h"
+//#include "game.cpp"
 
 using std::string;
 using std::getline;
@@ -158,6 +160,7 @@ int server_main() {
 		}
 	}
 
+	vector<int> gameBoard = generateBoard();
 
 	//close Socket
 	closesocket(StudySocket);
