@@ -25,3 +25,9 @@ int getServers(SOCKET s, ServerStruct server[]);
 int wait(SOCKET s, int seconds, int msec);
 sockaddr_in GetBroadcastAddress(char* IPAddress, char* subnetMask);
 sockaddr_in GetBroadcastAddressAlternate(char* IPAddress, char* subnetMask);
+
+//game.cpp
+void displayBoard(vector<int> board);
+vector<int> generateBoard();
+char* buildDatagram(const vector<int>& board);
+char* buildMoveDatagram(int pile, int stones);
