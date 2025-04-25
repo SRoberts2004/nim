@@ -7,11 +7,11 @@ using std::cin;
 using std::cout;
 using namespace std;
 
+//This should probably take a datagram (C-String) since we aren't going to be able to pass a vector to the server or client.
 void displayBoard(vector<int> board) {
 	for (int i = 0; i < board.size(); i++) {
 		cout << "Pile #" << i + 1 << " contains " << board.at(i) << " stones." << endl;
 	}
-
 };
 
 vector<int> generateBoard() {
@@ -54,14 +54,12 @@ vector<int> generateBoard() {
 		cout << endl;
 	}
 
-
-
 	displayBoard(board);
 	return  board;
 };
 
 char* buildDatagram(const vector<int>& board) { //NOT FINISHED Need to make sure this is able to be passed to sendTo(). 
-	int m = board.size();						//	Also need to proabably make a generateBoard function that takes a datagram since that's
+	int m = board.size();						//	Also need to proabably make a displayBoard function that takes a datagram since that's
 	int len = 1 + 2 * m;						//	what we will be recciving.
 	char* datagram = new char[len + 1];
 
@@ -85,6 +83,17 @@ char* buildDatagram(const vector<int>& board) { //NOT FINISHED Need to make sure
 	return datagram;
 };
 
+//Move Format: "mnn" where m is a single digit ('1' through '9')
+//	that represents a pile number, and nn are 2 digits ("01" through "20") 
+//	that represent the number of rocks to remove from pile m.
+char* buildMoveDatagram(int pile, int stones) {
+	int len = 4;
+	char* datagram = new char[len];
+	datagram[0] = '0' + pile;			//THIS FUNCTION IS INCOMPLETE
+	datagram[1] = '0' + stones;
+	datagram[len] = '\0';
+	return datagram;
+};
 //int main() {
 //
 //	vector<int> board = generateBoard();
