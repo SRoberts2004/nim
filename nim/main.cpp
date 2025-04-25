@@ -159,8 +159,8 @@ int server_main() {
 			}
 		}
 	}
-
-	//std::vector<int> gameBoard = generateBoard();
+	
+	std::vector<int> gameBoard = generateBoard();
 
 	//close Socket
 	closesocket(StudySocket);
