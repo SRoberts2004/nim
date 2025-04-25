@@ -158,9 +158,11 @@ int server_main() {
 				return 1;
 			}
 		}
+		else if (_stricmp(recvBuf, "GREAT!") == 0) {
+			cout << recvBuf << endl;
+			std::vector<int> gameBoard = generateBoard();
+		}
 	}
-	
-	std::vector<int> gameBoard = generateBoard();
 
 	//close Socket
 	closesocket(StudySocket);
