@@ -17,6 +17,8 @@
 #define Study_CONFIRM "Join!"
 //Added by us
 #define Player_CONFIRM "Player="
+#include <vector>
+
 struct ServerStruct {
 	char name[MAX_NAME];
 	sockaddr_in addr;
@@ -27,7 +29,7 @@ sockaddr_in GetBroadcastAddress(char* IPAddress, char* subnetMask);
 sockaddr_in GetBroadcastAddressAlternate(char* IPAddress, char* subnetMask);
 
 //game.cpp
-void displayBoard(vector<int> board);
-vector<int> generateBoard();
-char* buildDatagram(const vector<int>& board);
+void displayBoard(std::vector<int> board);
+std::vector<int> generateBoard();
+char* buildDatagram(const std::vector<int>& board);
 char* buildMoveDatagram(int pile, int stones);
