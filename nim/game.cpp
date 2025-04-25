@@ -8,10 +8,13 @@ using std::cin;
 using std::cout;
 using namespace std;
 
-//This should probably take a datagram (C-String) since we aren't going to be able to pass a vector to the server or client.
-void displayBoard(vector<int> board) {
-	for (int i = 0; i < board.size(); i++) {
-		cout << "Pile #" << i + 1 << " contains " << board.at(i) << " stones." << endl;
+void displayBoard(char* boardDatagram) {
+	int counter = 0;
+
+	for (int i = 1; i < strlen(boardDatagram); i++) {
+		cout << "Pile #" << counter + 1 << " contains " << boardDatagram[i] << boardDatagram[i + 1] << " stones." << endl;
+		counter++;
+		i++;
 	}
 };
 
@@ -55,13 +58,12 @@ vector<int> generateBoard() {
 		cout << endl;
 	}
 
-	displayBoard(board);
 	return  board;
 };
 
-char* buildDatagram(const vector<int>& board) { //NOT FINISHED Need to make sure this is able to be passed to sendTo(). 
-	int m = board.size();						//	Also need to proabably make a displayBoard function that takes a datagram since that's
-	int len = 1 + 2 * m;						//	what we will be recciving.
+char* buildDatagram(const vector<int>& board) {
+	int m = board.size();
+	int len = 1 + 2 * m;
 	char* datagram = new char[len + 1];
 
 	datagram[0] = '0' + m;
@@ -84,31 +86,32 @@ char* buildDatagram(const vector<int>& board) { //NOT FINISHED Need to make sure
 	return datagram;
 };
 
-//Move Format: "mnn" where m is a single digit ('1' through '9')
-//	that represents a pile number, and nn are 2 digits ("01" through "20") 
-//	that represent the number of rocks to remove from pile m.
 char* buildMoveDatagram(int pile, int stones) {
 	int len = 4;
 	char* datagram = new char[len];
 	datagram[0] = '0' + pile;
 	if (stones < 10) {
-		datagram[1] = '0' + stones;
+		datagram[1] = '0';
+		datagram[2] = '0' + stones;
 	}
 	else {
 		datagram[1] = '0' + (stones / 10);
-		datagram[1] = '0' + (stones % 10);
+		datagram[2] = '0' + (stones % 10);
 	}
-				//THIS FUNCTION IS INCOMPLETE
-	
-	
-	datagram[len] = '\0';
+
+	datagram[len - 1] = '\0';
 	return datagram;
 };
+
 //int main() {
 //
 //	vector<int> board = generateBoard();
 //
-//	buildDatagram(board);
+//	char* testBoard = buildDatagram(board);
+//	//buildMoveDatagram(2, 11);
+//
+//	displayBoard(testBoard);
+//
 //
 //	return 0;
 //}
