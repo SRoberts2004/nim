@@ -57,13 +57,12 @@ vector<int> generateBoard() {
 		}
 		cout << endl;
 	}
-
 	return  board;
 };
 
-char* buildDatagram(const vector<int>& board) {
+char* buildDatagram(const vector<int>& board) {	//Check that the person building the datagram is sending a valid number of stones to be removed
 	int m = board.size();
-	int len = 1 + 2 * m;
+	int len = 1 + (2 * m);
 	char* datagram = new char[len + 1];
 
 	datagram[0] = '0' + m;
@@ -81,12 +80,32 @@ char* buildDatagram(const vector<int>& board) {
 			datagram[index++] = '0' + (rocks % 10);
 		}
 	}
-
 	datagram[len] = '\0';
 	return datagram;
 };
 
-char* buildMoveDatagram(int pile, int stones) {
+char* buildMoveDatagram(const char* boardDatagram) {
+	int pile;
+	int stones;
+
+	cout << "Enter the pile number you want to remove stones from: ";
+	cin >> pile;
+	cout << endl;
+	while (pile < 1 || pile > (boardDatagram[0] - '0')) {
+		cout << "Please enter a valid pile number: ";
+		cin >> pile;
+		cout << endl;
+	}
+
+	cout << "Enter the number of stones you want to remove from pile #" << pile << ": ";
+	cin >> stones;
+	cout << endl;
+	while (stones < 1 || stones > ((boardDatagram[(pile - 1) * 2 + 1] - '0') * 10) + ((boardDatagram[(pile - 1) * 2 + 2] - '0'))) {
+		cout << "Please enter a valid number of stones to remove: ";
+		cin >> stones;
+		cout << endl;
+	}
+
 	int len = 4;
 	char* datagram = new char[len];
 	datagram[0] = '0' + pile;
@@ -98,9 +117,69 @@ char* buildMoveDatagram(int pile, int stones) {
 		datagram[1] = '0' + (stones / 10);
 		datagram[2] = '0' + (stones % 10);
 	}
-
 	datagram[len - 1] = '\0';
 	return datagram;
+};
+
+char* buildChatDatagram() {
+	cout << "Enter a message under 79 characters here: ";
+	string message;
+	cin >> message;
+	cout << endl;
+
+	while (message.length() > 79) {
+		cout << "Please enter a message that is less than 80 characters: ";
+		cin >> message;
+		cout << endl;
+	}
+
+	char* datagram = new char[80];
+	datagram[0] = 'C';
+
+	for (int i = 1; i < message.length() + 1; i++) {
+		datagram[i] = message[i - 1];
+	}
+	return datagram;
+};
+
+char* buildForfeitDatagram() {
+	char* datagram = new char[1];
+	datagram[0] = 'F';
+	datagram[1] = '\0';
+	return datagram;
+};
+
+void promptAndSendNextDecision(const char* boardDatagram) {
+	int choice = 0;
+	while (choice != 1 && choice != 3) {
+		cout << "What would you like to do next?" << endl;
+		cout << "Type \"1\" to make a move" << endl;
+		cout << "Type \"2\" to send a chat message" << endl;
+		cout << "Type \"3\" to forfeit the game" << endl;
+		cout << "Enter your choice here: ";
+		cin >> choice;
+		cout << endl;
+
+		while (choice < 1 || choice > 3) {
+			cout << "Please enter a valid choice: ";
+			cin >> choice;
+			cout << endl;
+		}
+
+		buildChatDatagram(); // Pass this to sendTo or something
+		cout << "Chat message sent!" << endl;
+	}
+
+	if (choice == 1) {
+		buildMoveDatagram(boardDatagram); //Pass this to sendTo or something
+		cout << "Move sent!" << endl;
+		return;
+	}
+	else if (choice == 3) {
+		buildForfeitDatagram(); // Pass this to sendTo or something
+		cout << "Forfeit sent!" << endl;
+		return;
+	}
 };
 
 //int main() {
