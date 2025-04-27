@@ -132,25 +132,31 @@ char* buildMoveDatagram(const char* boardDatagram) {
 };
 
 char* buildChatDatagram() {
-	cout << "Enter a message under 79 characters here: ";
+	cout << "Enter a message under 78 characters here: ";
 	string message;
-	cin >> message;
+
+	//cin.ignore();
+	getline(cin, message);
 	cout << endl;
 
-	while (message.length() > 79) {
+	while (message.length() > 78) {
 		cout << "Please enter a message that is less than 80 characters: ";
-		cin >> message;
+		cin.ignore();
+		getline(cin, message);
 		cout << endl;
 	}
 
 	char* datagram = new char[80];
 	datagram[0] = 'C';
 
-	for (int i = 1; i < message.length() + 1; i++) {
-		datagram[i] = message[i - 1];
+	for (int i = 0; i < message.length(); i++) {
+		datagram[i + 1] = message[i];
 	}
+	datagram[message.length() + 1] = '\0';
+
 	return datagram;
 };
+
 
 char* buildForfeitDatagram() {
 	char* datagram = new char[2];
@@ -159,32 +165,32 @@ char* buildForfeitDatagram() {
 	return datagram;
 };
 
-char* generateNextDecisionDatagram(char* boardDatagram) {
+char* generateNextDecisionDatagram(const char* boardDatagram) {
 	int choice = 0;
-	while (choice != 1 && choice != 3) {
+
+	while (true) {
 		cout << "What would you like to do?" << endl;
 		cout << "Type \"1\" to make a move" << endl;
 		cout << "Type \"2\" to send a chat message" << endl;
 		cout << "Type \"3\" to forfeit the game" << endl;
 		cout << "Enter your choice here: ";
 		cin >> choice;
+		cin.ignore();
 		cout << endl;
 
-		while (choice < 1 || choice > 3) {
-			cout << "Please enter a valid choice: ";
-			cin >> choice;
-			cout << endl;
+		if (choice == 1 || choice == 2 || choice == 3) {
+			break;
 		}
-		cout << "Chat message sent!" << endl;
-		buildChatDatagram();
+		cout << "Please enter a valid choice." << endl;
 	}
 
 	if (choice == 1) {
-		cout << "Move sent!" << endl;
 		return buildMoveDatagram(boardDatagram);
 	}
-	else if (choice == 3) {
-		cout << "Forfeit sent!" << endl;
+	else if (choice == 2) {
+		return buildChatDatagram();
+	}
+	else {
 		return buildForfeitDatagram();
 	}
 };
@@ -239,7 +245,6 @@ bool isValidMove(const char* moveDatagram, const char* boardDatagram) {
 //		char* move = buildMoveDatagram(testBoard);
 //		updateBoardDatagram(testBoard, move);
 //	}
-//
 //
 //	return 0;
 //}

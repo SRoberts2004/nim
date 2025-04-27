@@ -29,7 +29,13 @@ sockaddr_in GetBroadcastAddress(char* IPAddress, char* subnetMask);
 sockaddr_in GetBroadcastAddressAlternate(char* IPAddress, char* subnetMask);
 
 //game.cpp
-void displayBoard(std::vector<int> board);
+void displayBoard(const char* boardDatagram);
 std::vector<int> generateBoard();
-char* buildDatagram(const std::vector<int>& board);
-char* buildMoveDatagram(int pile, int stones);
+char* buildBoardDatagram(const std::vector<int>& board);
+char* buildMoveDatagram(const char* boardDatagram);
+char* buildChatDatagram();
+char* buildForfeitDatagram();
+char* generateNextDecisionDatagram(const char* boardDatagram);
+bool isGameOver(const char* boardDatagram);
+bool isValidMove(const char* moveDatagram, const char* boardDatagram);
+void updateBoardDatagram(char* boardDatagram, const char* moveDatagram);
