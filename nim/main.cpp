@@ -113,11 +113,13 @@ int server_main() {
 	char recvbuf[DEFAULT_BUFLEN] = {};
 	char sendbuf[DEFAULT_BUFLEN] = {};
 	char server_name[DEFAULT_BUFLEN] = {};
+	char inputName[DEFAULT_BUFLEN] = {};
 
 	//add string concat for name=
-	cout << "Type 'Name=(your name)': ";
-	cin.getline(server_name, DEFAULT_BUFLEN);
-	//strcat_s(memberList, newMemberName);
+	cout << "Please type your name: ";
+	cin.getline(inputName, DEFAULT_BUFLEN);
+	strcat_s(server_name, Study_NAME);
+	strcat_s(server_name, inputName);
 
 	//4. Send and recieve data
 
@@ -216,9 +218,12 @@ int client_main() {
 
 	//new code
 	//add string concat for player=
-	cout << "Please type 'Player=(your name)':";
+	cout << "Please type your name: ";
 	char player_name[DEFAULT_BUFLEN] = {};
-	cin.getline(player_name, DEFAULT_BUFLEN);
+	char inputName[DEFAULT_BUFLEN] = {};
+	cin.getline(inputName, DEFAULT_BUFLEN);
+	strcat_s(player_name, Player_CONFIRM);
+	strcat_s(player_name, inputName);
 
 	bool boolChallenge = false;
 	while (boolChallenge == false) {
