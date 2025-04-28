@@ -197,7 +197,9 @@ int server_main() {
 				if (nextDecisionDatagram[0] == 'F' && theGameIsOver != true) {
 					cout << "Enemy has forfeited the game!" << endl;
 					theGameIsOver = true;
-					break;
+					closesocket(StudySocket);
+					WSACleanup();
+					return 1;
 				}
 				else if (theGameIsOver != true) {
 					if (isValidMove(nextDecisionDatagram, board)) {
@@ -209,12 +211,17 @@ int server_main() {
 						theGameIsOver = isGameOver(board);
 						if (theGameIsOver == true) {
 							cout << "Game Over! You Lose!" << endl;
+							closesocket(StudySocket);
+							WSACleanup();
 							return 1;
 						}
 					}
 					else {
 						cout << "Enemy has made an invalid move!" << endl;
 						cout << "You win by default!" << endl;
+						closesocket(StudySocket);
+						WSACleanup();
+						return 1;
 					}
 					nextDecisionDatagram = generateNextDecisionDatagram(board);
 				}
@@ -231,6 +238,9 @@ int server_main() {
 					cout << "You have forfeited the game!" << endl;
 					int iResult = sendto(StudySocket, nextDecisionDatagram, strlen(nextDecisionDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 					theGameIsOver = true;
+					closesocket(StudySocket);
+					WSACleanup();
+					return 1;
 				}
 				else {
 					updateBoardDatagram(board, nextDecisionDatagram);
@@ -246,7 +256,9 @@ int server_main() {
 					theGameIsOver = isGameOver(board);
 					if (theGameIsOver == true) {
 						cout << "Game Over! You Win!" << endl;
-						break;
+						closesocket(StudySocket);
+						WSACleanup();
+						return 1;
 					}
 					else {
 						recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
@@ -404,6 +416,9 @@ int client_main() {
 						cout << "You have forfeited the game!" << endl;
 						int iResult = sendto(ConnectionlessSocket, nextDecisionDatagram, strlen(nextDecisionDatagram) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
 						theGameIsOver = true;
+						closesocket(ConnectionlessSocket);
+						WSACleanup();
+						return 1;
 					}
 					else {
 						updateBoardDatagram(board, nextDecisionDatagram);
@@ -419,7 +434,9 @@ int client_main() {
 						theGameIsOver = isGameOver(board);
 						if (theGameIsOver == true) {
 							cout << "Game Over! You Win!" << endl;
-							break;
+							closesocket(ConnectionlessSocket);
+							WSACleanup();
+							return 1;
 						}
 						recvfrom(ConnectionlessSocket, nextDecisionDatagram, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
 					}
@@ -436,7 +453,9 @@ int client_main() {
 					if (nextDecisionDatagram[0] == 'F' && theGameIsOver != true) {
 						cout << "Enemy has forfeited the game!" << endl;
 						theGameIsOver = true;
-						break;
+						closesocket(ConnectionlessSocket);
+						WSACleanup();
+						return 1;
 					}
 					else if (theGameIsOver != true) {
 						if (isValidMove(nextDecisionDatagram, board)) {
@@ -449,13 +468,18 @@ int client_main() {
 							theGameIsOver = isGameOver(board);
 							if (theGameIsOver == true) {
 								cout << "Game Over! You Lose!" << endl;
-								break;
+								closesocket(ConnectionlessSocket);
+								WSACleanup();
+								return 1;
 							}
 						}
 						else {
 							cout << "Enemy has made an invalid move!" << endl;
 							cout << "You win by default!" << endl;
 							theGameIsOver = true;
+							closesocket(ConnectionlessSocket);
+							WSACleanup();
+							return 1;
 						}
 					}
 				}
