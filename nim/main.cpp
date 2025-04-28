@@ -183,7 +183,7 @@ int server_main() {
 
 			while (true) {
 				recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-				if (recvBuf != Study_QUERY) {
+				if (strcmp(recvBuf, Study_QUERY) != 0) {
 					break;
 				}
 			}
@@ -197,7 +197,7 @@ int server_main() {
 						cout << "Enemy has sent a chat message: " << nextDecisionDatagram + 1 << endl;
 						while (true) {
 							recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-							if (recvBuf != Study_QUERY) {
+							if (strcmp(recvBuf, Study_QUERY) != 0) {
 								break;
 							}
 						}
@@ -274,7 +274,7 @@ int server_main() {
 					else {
 						while (true) {
 							recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-							if (recvBuf != Study_QUERY) {
+							if (strcmp(recvBuf, Study_QUERY) != 0) {
 								break;
 							}
 						}
@@ -396,14 +396,24 @@ int client_main() {
 
 			char great[7] = "GREAT!";
 
-			recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+			while (true) {
+				recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+				if (strcmp(recvBuf, Study_QUERY) != 0) {
+					break;
+				}
+			}
 			wait(ConnectionlessSocket, 7, 0);
 
 			if (_stricmp(recvBuf, "YES") == 0) {//if server said yes
 				int iResult = sendto(ConnectionlessSocket, great, strlen(great) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
 				boolChallenge = true;
 
-				recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+				while (true) {
+					recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+					if (strcmp(recvBuf, Study_QUERY) != 0) {
+						break;
+					}
+				}
 				if (iResult == SOCKET_ERROR) {
 					cout << "send failed: " << WSAGetLastError() << endl;
 					closesocket(ConnectionlessSocket);
@@ -454,14 +464,24 @@ int client_main() {
 							WSACleanup();
 							return 1;
 						}
-						recvfrom(ConnectionlessSocket, nextDecisionDatagram, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+						while (true) {
+							recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+							if (strcmp(recvBuf, Study_QUERY) != 0) {
+								break;
+							}
+						}
 					}
 
 
 					if (nextDecisionDatagram[0] == 'C' && theGameIsOver != true) {
 						while (nextDecisionDatagram[0] == 'C') {
 							cout << "Enemy has sent a chat message: " << nextDecisionDatagram + 1 << endl;
-							recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+							while (true) {
+								recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+								if (strcmp(recvBuf, Study_QUERY) != 0) {
+									break;
+								}
+							}
 							nextDecisionDatagram = recvBuf;
 						}
 					}
