@@ -195,7 +195,12 @@ int server_main() {
 				if (nextDecisionDatagram[0] == 'C' && theGameIsOver != true) {
 					while (nextDecisionDatagram[0] == 'C') {
 						cout << "Enemy has sent a chat message: " << nextDecisionDatagram + 1 << endl;
-						recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+						while (true) {
+							recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+							if (recvBuf != Study_QUERY) {
+								break;
+							}
+						}
 						nextDecisionDatagram = recvBuf;
 					}
 				}
@@ -267,7 +272,12 @@ int server_main() {
 						return 1;
 					}
 					else {
-						recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+						while (true) {
+							recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+							if (recvBuf != Study_QUERY) {
+								break;
+							}
+						}
 						nextDecisionDatagram = recvBuf;
 					}
 				}
