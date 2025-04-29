@@ -27,9 +27,9 @@ int server_main() {
 		return 1;
 	}
 
-	SOCKET StudySocket = INVALID_SOCKET;
-	StudySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (StudySocket == INVALID_SOCKET) {
+	SOCKET NimSocket = INVALID_SOCKET;
+	NimSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (NimSocket == INVALID_SOCKET) {
 		cout << "Error at socket(): " << WSAGetLastError() << '\n';
 		WSACleanup();
 		return 1;
@@ -40,10 +40,10 @@ int server_main() {
 	myAddr.sin_port = htons(29333);
 	myAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	iResult = bind(StudySocket, (SOCKADDR*)&myAddr, sizeof(myAddr));
+	iResult = bind(NimSocket, (SOCKADDR*)&myAddr, sizeof(myAddr));
 	if (iResult == SOCKET_ERROR) {
 		cout << "bind failed with error: " << WSAGetLastError() << '\n';
-		closesocket(StudySocket);
+		closesocket(NimSocket);
 		WSACleanup();
 		return 1;
 	}
@@ -83,14 +83,14 @@ int server_main() {
 	cout << "Waiting for a player to join..." << endl;
 
 
-	while (recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize))
+	while (recvfrom(NimSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize))
 	{
 		if (_stricmp(recvBuf, "WHO?") == 0)
 		{
-			int iResult = sendto(StudySocket, server_name, strlen(server_name) + 1, 0, (sockaddr*)&addr, sizeof(addr));
+			int iResult = sendto(NimSocket, server_name, strlen(server_name) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 			if (iResult == SOCKET_ERROR) {
 				cout << "send failed: " << WSAGetLastError() << endl;
-				closesocket(StudySocket);
+				closesocket(NimSocket);
 				WSACleanup();
 				return 1;
 			}
@@ -101,20 +101,20 @@ int server_main() {
 			cin.ignore(1);
 			cin.getline(sendbuf, DEFAULT_BUFLEN);
 
-			int iResult = sendto(StudySocket, sendbuf, strlen(sendbuf) + 1, 0, (sockaddr*)&addr, sizeof(addr));
+			int iResult = sendto(NimSocket, sendbuf, strlen(sendbuf) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 			if (iResult == SOCKET_ERROR) {
 				cout << "send failed: " << WSAGetLastError() << endl;
-				closesocket(StudySocket);
+				closesocket(NimSocket);
 				WSACleanup();
 				return 1;
 			}
 		}
 		else if (_stricmp(recvBuf, "GREAT!") == 0) {
 			cout << "Let the game begin..." << endl << endl;
-			int iResult = sendto(StudySocket, boardDatagram, strlen(boardDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
+			int iResult = sendto(NimSocket, boardDatagram, strlen(boardDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 
 			while (true) {
-				recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+				recvfrom(NimSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
 				if (strcmp(recvBuf, Play_QUERY) != 0) {
 					break;
 				}
@@ -128,7 +128,7 @@ int server_main() {
 					while (nextDecisionDatagram[0] == 'C') {
 						cout << "Enemy has sent a chat message: " << nextDecisionDatagram + 1 << endl;
 						while (true) {
-							recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+							recvfrom(NimSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
 							if (strcmp(recvBuf, Play_QUERY) != 0) {
 								break;
 							}
@@ -140,7 +140,7 @@ int server_main() {
 				if (nextDecisionDatagram[0] == 'F' && theGameIsOver != true) {
 					cout << "Enemy has forfeited the game!" << endl;
 					theGameIsOver = true;
-					closesocket(StudySocket);
+					closesocket(NimSocket);
 					WSACleanup();
 					return 1;
 				}
@@ -154,7 +154,7 @@ int server_main() {
 						theGameIsOver = isGameOver(board);
 						if (theGameIsOver == true) {
 							cout << "Game Over! You Lose!" << endl;
-							closesocket(StudySocket);
+							closesocket(NimSocket);
 							WSACleanup();
 							return 1;
 						}
@@ -162,7 +162,7 @@ int server_main() {
 					else {
 						cout << "Enemy has made an invalid move!" << endl;
 						cout << "You win by default!" << endl;
-						closesocket(StudySocket);
+						closesocket(NimSocket);
 						WSACleanup();
 						return 1;
 					}
@@ -171,7 +171,7 @@ int server_main() {
 
 				if (nextDecisionDatagram[0] == 'C' && theGameIsOver != true) {
 					while (nextDecisionDatagram[0] == 'C') {
-						int iResult = sendto(StudySocket, nextDecisionDatagram, strlen(nextDecisionDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
+						int iResult = sendto(NimSocket, nextDecisionDatagram, strlen(nextDecisionDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 						cout << "Chat message sent: " << nextDecisionDatagram + 1 << endl << endl;
 						nextDecisionDatagram = generateNextDecisionDatagram(board);
 					}
@@ -179,19 +179,19 @@ int server_main() {
 
 				if (nextDecisionDatagram[0] == 'F' && theGameIsOver != true) {
 					cout << "You have forfeited the game!" << endl;
-					int iResult = sendto(StudySocket, nextDecisionDatagram, strlen(nextDecisionDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
+					int iResult = sendto(NimSocket, nextDecisionDatagram, strlen(nextDecisionDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 					theGameIsOver = true;
-					closesocket(StudySocket);
+					closesocket(NimSocket);
 					WSACleanup();
 					return 1;
 				}
 				else {
 					updateBoardDatagram(board, nextDecisionDatagram);
 					displayBoard(board);
-					int iResult = sendto(StudySocket, nextDecisionDatagram, strlen(nextDecisionDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
+					int iResult = sendto(NimSocket, nextDecisionDatagram, strlen(nextDecisionDatagram) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 					if (iResult == SOCKET_ERROR) {
 						cout << "send failed: " << WSAGetLastError() << endl;
-						closesocket(StudySocket);
+						closesocket(NimSocket);
 						WSACleanup();
 						return 1;
 					}
@@ -199,13 +199,13 @@ int server_main() {
 					theGameIsOver = isGameOver(board);
 					if (theGameIsOver == true) {
 						cout << "Game Over! You Win!" << endl;
-						closesocket(StudySocket);
+						closesocket(NimSocket);
 						WSACleanup();
 						return 1;
 					}
 					else {
 						while (true) {
-							recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+							recvfrom(NimSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
 							if (strcmp(recvBuf, Play_QUERY) != 0) {
 								break;
 							}
@@ -216,7 +216,7 @@ int server_main() {
 			}
 		}
 	}
-	closesocket(StudySocket);
+	closesocket(NimSocket);
 	WSACleanup();
 }
 
