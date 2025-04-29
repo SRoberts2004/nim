@@ -402,7 +402,7 @@ int client_main() {
 					break;
 				}
 			}
-			wait(ConnectionlessSocket, 7, 0);
+			wait(ConnectionlessSocket, 10, 0);
 
 			if (_stricmp(recvBuf, "YES") == 0) {//if server said yes
 				int iResult = sendto(ConnectionlessSocket, great, strlen(great) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
