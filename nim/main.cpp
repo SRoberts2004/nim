@@ -111,7 +111,7 @@ int server_main() {
 	}
 
 	int recvbuflen = DEFAULT_BUFLEN;
-	char recvbuf[DEFAULT_BUFLEN] = {};
+	//char recvbuf[DEFAULT_BUFLEN] = {};
 	char sendbuf[DEFAULT_BUFLEN] = {};
 
 	char entered_server_name[DEFAULT_BUFLEN] = {};
@@ -382,8 +382,8 @@ int client_main() {
 			cin.ignore(1);
 
 			int recvbuflen = DEFAULT_BUFLEN;
-			char recvbuf[DEFAULT_BUFLEN];
-			char sendbuf[DEFAULT_BUFLEN];
+			//char recvbuf[DEFAULT_BUFLEN];
+			//char sendbuf[DEFAULT_BUFLEN];
 
 			int iResult = sendto(ConnectionlessSocket, player_name, strlen(player_name) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
 			if (iResult == SOCKET_ERROR) {
