@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstring>
-#include "StudyBuddy.h"
+#include "nim.h"
 #include <string>
 #include <vector>
 
@@ -39,7 +39,6 @@ vector<int> generateBoard() {
 		}
 	}
 	cout << endl;
-	//fill in piles with stones
 	vector<int> board(numOfPiles);
 	for (int i = 0; i < numOfPiles; i++) {
 		cout << "Enter the number of stones you'd like in pile #" << i + 1 << " here: ";
@@ -135,7 +134,6 @@ char* buildChatDatagram() {
 	cout << "Enter a message under 78 characters here: ";
 	string message;
 
-	//cin.ignore();
 	getline(cin, message);
 	cout << endl;
 
@@ -233,21 +231,6 @@ bool isValidMove(const char* moveDatagram, const char* boardDatagram) {
 	}
 	return true;
 };
-
-//int main() {
-//
-//	vector<int> board = generateBoard();
-//	char* testBoard = buildBoardDatagram(board);
-//	while (true) {
-//		cout << "Current board:" << endl;
-//		displayBoard(testBoard);
-//
-//		char* move = buildMoveDatagram(testBoard);
-//		updateBoardDatagram(testBoard, move);
-//	}
-//
-//	return 0;
-//}
 
 /*
 Host Behavior:

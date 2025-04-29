@@ -1,69 +1,10 @@
-
-
-//#include <iostream>
-//#include <cstring>
-//
-//
-//
-//using std::cin;
-//using std::cout;
-
-
-
-/*
-1. Let person host or join
-1a. if they select host create the board
-1b. Get name of client and host
-1c. connect both and ensure proper connection
-
-2. board is displayed
-3. gameplay persues with exchanging of moves
-4. Option Continue without chat, Forfit, Continue withsent chat
-5. send and ensure all relevant information is recieved
-6. check the numbers sent between each
-7. Display end-game message
-8. send back to step one
-
-
-
-Networking side
-1. connecting servers and letting user pick which role they want
-2. Get names of the players
-3. prompt host to build board
-4. prompt client with first move
-5. exchange moves with or without chat feature
-6. update the board status in between every move
-6a. check for empty board/winner
-7. check for incorrect/illegal moves
-8.validate data before sending
-
-
-
-Client side
-1. Generate the board
-2. Recieve the board
-3. update the board state
-4. win loss check -
-4a. win
-4b. loss
-4c. forfit
-5.
-6.
-
-Common variables and function names:
-1.
-
-*/
-
-
 #include <iostream>
 #include <WinSock2.h>
 #include <ws2tcpip.h>
 #include <string>
 #include <cstring>
 #include <vector>
-#include "StudyBuddy.h"
-//#include "game.cpp"
+#include "nim.h"
 
 using std::string;
 using std::getline;
@@ -72,10 +13,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-
 #pragma comment(lib,"Ws2_32.lib")
-
-
 
 int server_main() {
 
@@ -111,7 +49,6 @@ int server_main() {
 	}
 
 	int recvbuflen = DEFAULT_BUFLEN;
-	//char recvbuf[DEFAULT_BUFLEN] = {};
 	char sendbuf[DEFAULT_BUFLEN] = {};
 
 	char entered_server_name[DEFAULT_BUFLEN] = {};
@@ -129,14 +66,9 @@ int server_main() {
 		server_name[i] = entered_server_name[i - 5];
 	}
 
-	//4. Send and recieve data
-
 	int numServers = 0;
 	char IPAddress[20] = "", subnetMask[20] = "";
 
-
-
-	//Recieving location
 	char recvBuf[DEFAULT_BUFLEN] = {};
 	int len = 0;
 	struct sockaddr_in addr;
@@ -183,7 +115,7 @@ int server_main() {
 
 			while (true) {
 				recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-				if (strcmp(recvBuf, Study_QUERY) != 0) {
+				if (strcmp(recvBuf, Play_QUERY) != 0) {
 					break;
 				}
 			}
@@ -197,7 +129,7 @@ int server_main() {
 						cout << "Enemy has sent a chat message: " << nextDecisionDatagram + 1 << endl;
 						while (true) {
 							recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-							if (strcmp(recvBuf, Study_QUERY) != 0) {
+							if (strcmp(recvBuf, Play_QUERY) != 0) {
 								break;
 							}
 						}
@@ -274,7 +206,7 @@ int server_main() {
 					else {
 						while (true) {
 							recvfrom(StudySocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-							if (strcmp(recvBuf, Study_QUERY) != 0) {
+							if (strcmp(recvBuf, Play_QUERY) != 0) {
 								break;
 							}
 						}
@@ -284,7 +216,6 @@ int server_main() {
 			}
 		}
 	}
-	//close Socket
 	closesocket(StudySocket);
 	WSACleanup();
 }
@@ -299,13 +230,11 @@ int server_main() {
 
 
 int client_main() {
-	//code that we used in previous project
 	char recvBuf[DEFAULT_BUFLEN] = {};
 	int len = 0;
 	struct sockaddr_in addr;
 	int addrSize = sizeof(addr);
 
-	// 1. initialize winstock
 	WSADATA wsaData;
 
 	int iResult;
@@ -316,12 +245,6 @@ int client_main() {
 		return 1;
 	}
 
-
-	// 2. Create a socket
-	// AI Family - AF_INET
-	// AI Socktype - [SOCK_STREAM] or SOCK_DGRAM
-	// AI Protocol - IPPROTO_TCP OR IPPROTO_UDP
-
 	SOCKET ConnectionlessSocket = INVALID_SOCKET;
 	ConnectionlessSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (ConnectionlessSocket == INVALID_SOCKET) {
@@ -329,13 +252,7 @@ int client_main() {
 		WSACleanup();
 		return 1;
 	}
-
-
-
-
-
-	//new code
-	//add string concat for player=
+	
 	cout << "Please type your name here: ";
 	char user_entered_name[DEFAULT_BUFLEN] = {};
 	char player_name[DEFAULT_BUFLEN] = {};
@@ -353,21 +270,15 @@ int client_main() {
 		player_name[i] = user_entered_name[i - 7];
 	}
 
-
-	//cin.getline(player_name, DEFAULT_BUFLEN);
-
 	bool boolChallenge = false;
 	while (boolChallenge == false) {
-		//array of server struct need to go below with socket
 		ServerStruct serverInfo[MAX_SERVERS];
 		int numServer = getServers(ConnectionlessSocket, serverInfo);
 
-		//save number of servers
 		int i = 0;
 		for (i = 0; i < numServer; i++) {
 			cout << i + 1 << ". ";
 			cout << serverInfo[i].name << endl;
-			//serverinfo at i has address
 		}
 
 		if (i == 0)
@@ -376,14 +287,19 @@ int client_main() {
 		}
 		else
 		{
-			cout << "Type the number of the server you would like to join:" << endl;
+			cout << "Type the number of the server you would like to join, or enter 0 to quit:" << endl;
 			cin >> i;
+
+			if (i == 0) {
+				cout << "Exiting..." << endl;
+				closesocket(ConnectionlessSocket);
+				WSACleanup();
+				return 1;
+			}
 			i--;
 			cin.ignore(1);
 
 			int recvbuflen = DEFAULT_BUFLEN;
-			//char recvbuf[DEFAULT_BUFLEN];
-			//char sendbuf[DEFAULT_BUFLEN];
 
 			int iResult = sendto(ConnectionlessSocket, player_name, strlen(player_name) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
 			if (iResult == SOCKET_ERROR) {
@@ -397,20 +313,24 @@ int client_main() {
 			char great[7] = "GREAT!";
 
 			while (true) {
-				recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-				if (strcmp(recvBuf, Study_QUERY) != 0) {
+				if (wait(ConnectionlessSocket, 10, 0) != 0) {
+					recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+					if (strcmp(recvBuf, Play_QUERY) != 0) {
+						break;
+					}
+				}
+				else {
 					break;
 				}
 			}
-			wait(ConnectionlessSocket, 10, 0);
 
-			if (_stricmp(recvBuf, "YES") == 0) {//if server said yes
+			if (_stricmp(recvBuf, "YES") == 0) {
 				int iResult = sendto(ConnectionlessSocket, great, strlen(great) + 1, 0, (sockaddr*)&serverInfo[i].addr, sizeof(serverInfo[i].addr));
 				boolChallenge = true;
 
 				while (true) {
 					recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-					if (strcmp(recvBuf, Study_QUERY) != 0) {
+					if (strcmp(recvBuf, Play_QUERY) != 0) {
 						break;
 					}
 				}
@@ -466,7 +386,7 @@ int client_main() {
 						}
 						while (true) {
 							recvfrom(ConnectionlessSocket, nextDecisionDatagram, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-							if (strcmp(nextDecisionDatagram, Study_QUERY) != 0) {
+							if (strcmp(nextDecisionDatagram, Play_QUERY) != 0) {
 								break;
 							}
 						}
@@ -478,7 +398,7 @@ int client_main() {
 							cout << "Enemy has sent a chat message: " << nextDecisionDatagram + 1 << endl;
 							while (true) {
 								recvfrom(ConnectionlessSocket, nextDecisionDatagram, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-								if (strcmp(nextDecisionDatagram, Study_QUERY) != 0) {
+								if (strcmp(nextDecisionDatagram, Play_QUERY) != 0) {
 									break;
 								}
 							}
@@ -528,25 +448,12 @@ int client_main() {
 			}
 		}
 	}
-
 	closesocket(ConnectionlessSocket);
 	WSACleanup();
 	return 1;
 }
 
-
-
-
-
-
-
-
-
-
-
-
 int main() {
-	//loop because client could exit
 	int input = 0;
 	while (input != 3) {
 		cout << "Pick one of the following options (type the number):" << endl << "1. Host" << endl << "2. Join" << endl << "3. Quit" << endl;

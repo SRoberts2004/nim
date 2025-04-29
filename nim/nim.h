@@ -1,12 +1,11 @@
 #pragma once
-#include <WinSock2.h>	//Added this to make this file work
+#include <WinSock2.h>
 #define MAX_NAME 80
 #define MAX_SERVERS 100
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT 29333
-#define Study_QUERY "Who?"
-#define Study_NAME "Name="
-//Added by us
+#define Play_QUERY "Who?"
+#define Server_NAME "Name="
 #define Player_CONFIRM "Player="
 #include <vector>
 
@@ -18,8 +17,6 @@ int getServers(SOCKET s, ServerStruct server[]);
 int wait(SOCKET s, int seconds, int msec);
 sockaddr_in GetBroadcastAddress(char* IPAddress, char* subnetMask);
 sockaddr_in GetBroadcastAddressAlternate(char* IPAddress, char* subnetMask);
-
-//game.cpp
 void displayBoard(const char* boardDatagram);
 std::vector<int> generateBoard();
 char* buildBoardDatagram(const std::vector<int>& board);
