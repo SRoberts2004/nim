@@ -4,7 +4,7 @@
 #define MAX_COURSENAME 10
 #define MAX_SERVERS 100
 #define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT 29333
+#define DEFAULT_PORT 31100
 #define Study_QUERY "Who?"
 #define Study_NAME "Name="
 #define Study_WHERE "Where?"
