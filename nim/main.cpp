@@ -99,7 +99,7 @@ int server_main() {
 
 	struct sockaddr_in myAddr;
 	myAddr.sin_family = AF_INET;
-	myAddr.sin_port = htons(DEFAULT_PORT);
+	myAddr.sin_port = htons(29333);
 	myAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	iResult = bind(StudySocket, (SOCKADDR*)&myAddr, sizeof(myAddr));

@@ -113,7 +113,7 @@ sockaddr_in GetBroadcastAddress(char* ip, char* mask)
 			unsigned long BcastMask = subnetMask ^ 0xffffffff;
 			broadcastAddress = IPAddress | BcastMask;
 			addr.sin_family = AF_INET;
-			addr.sin_port = htons(DEFAULT_PORT);
+			addr.sin_port = htons(29333);
 			addr.sin_addr.S_un.S_addr = broadcastAddress;
 		}
 	}
