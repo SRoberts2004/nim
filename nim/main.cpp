@@ -477,12 +477,11 @@ int client_main() {
 						while (nextDecisionDatagram[0] == 'C') {
 							cout << "Enemy has sent a chat message: " << nextDecisionDatagram + 1 << endl;
 							while (true) {
-								recvfrom(ConnectionlessSocket, recvBuf, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
-								if (strcmp(recvBuf, Study_QUERY) != 0) {
+								recvfrom(ConnectionlessSocket, nextDecisionDatagram, DEFAULT_BUFLEN, 0, (sockaddr*)&addr, &addrSize);
+								if (strcmp(nextDecisionDatagram, Study_QUERY) != 0) {
 									break;
 								}
 							}
-							nextDecisionDatagram = recvBuf;
 						}
 					}
 
